@@ -11,19 +11,19 @@ def read_args():
     """
     example_text = """
     For an environment located in ~/env/dev/.venv:
-    pyenv dev -r
-    pyenv dev -s script.py
-    
+    pytato dev -r
+    pytato dev -s script.py
+
     For an environment located in non-default location: [/path/to/env/dev/.venv]
-    pyenv -p /path/to/env dev -r
-    pyenv -p /path/to/env dev -s script.py
+    pytato -p /path/to/env dev -r
+    pytato -p /path/to/env dev -s script.py
 
     To move to a environments directory:
-    cd $(pyenv dev) -> cd ~/env/dev
-    cd $(pyenv -p ~/path/ env) -> cd ~/path/env
+    cd $(pytato dev) -> cd ~/env/dev
+    cd $(pytato -p ~/path/ env) -> cd ~/path/env
     """
     parser = argparse.ArgumentParser(description="", epilog=example_text, formatter_class=argparse.RawDescriptionHelpFormatter)
-    group = parser.add_mutually_exclusive_group() 
+    group = parser.add_mutually_exclusive_group()
     group.add_argument("-r", "--repl", action="store_true", help="Use to activate a ptpython REPL in selected environment. Cannot use this with -s option.")
     group.add_argument("-s", "--script", dest="script", help="Supply a script to run in the virtual environment chosen. Cannot use this with -r option.")
     parser.add_argument("env", help="Environment to activate. By default this is a directory name after ~/env/ that contains a .venv directory. "
@@ -40,7 +40,7 @@ def run_script(path, script):
     """
     # path to a python interpreter that runs any python script
     python_bin = "{}/.venv/bin/python3".format(path)
-    
+
     # path to the script that must run under the virtualenv
     subprocess.Popen([python_bin, script])
 
@@ -55,10 +55,10 @@ def spawn_ptpython(path):
         print("No .venv directory found in virtual environment! Unable to activate.")
         exit(1)
     exec(compile(open(activate_this_file, "rb").read(), activate_this_file, 'exec'), dict(__file__=activate_this_file))
-    
-    # TODO: Check if import fails, possibly prompt user if they'd like to install ptpython. 
+
+    # TODO: Check if import fails, possibly prompt user if they'd like to install ptpython.
     from ptpython.repl import embed
-    
+
     config_file = '~/.ptpython/config.py'
     config_file = os.path.expanduser(config_file)
     namespace = {}
@@ -66,21 +66,21 @@ def spawn_ptpython(path):
         with open(config_file, 'rb') as f:
             code = compile(f.read(), config_file, 'exec')
             six.exec_(code, namespace, namespace)
-        
+
     # Spawn Shell
     embed(globals=globals(), locals=locals(), configure=namespace.get('configure'))
-    
+
 
 def main():
     args = read_args()
     # will fix ~ as well as absolute paths. resulting path will not have a "/" at the end.
     path_to_env_dir = os.path.abspath(os.path.expanduser(args.path))
     env_path = "{}/{}".format(path_to_env_dir, args.env)
-    
+
     if not os.path.exists(env_path):
         print("Path to {} environment does not exist!".format(args.env))
         exit(1)
-    
+
     if args.repl:
         spawn_ptpython(env_path)
         exit(0)
