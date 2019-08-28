@@ -1,4 +1,4 @@
-# pyenv
+# pytato
 Python environment tool
 
 ## Requirements
@@ -47,12 +47,12 @@ Example:
     ├── Pipfile
     └── Pipfile.lock
 ```
-`pyenv -p ~/git/repos other_project -r`  
+`pytato -p ~/git/repos other_project -r`  
 Above command will spawn a ptpython repl in the virtual environment defined in other_project/Pipefile.
 
 ## Usage
 ```
-usage: pyenv [-h] [-r | -s SCRIPT] [-p PATH] env
+usage: pytato [-h] [-r | -s SCRIPT] [-p PATH] env
 
 positional arguments:
   env                   Environment to activate. By default this is a
@@ -72,14 +72,14 @@ optional arguments:
                         located. ~/env/ by default
 
     For an environment located in ~/env/dev/.venv:
-    pyenv dev -r
-    pyenv dev -s script.py
+    pytato dev -r
+    pytato dev -s script.py
 
     For an environment located in non-default location: [/path/to/env/dev/.venv]
-    pyenv -p /path/to/env dev -r
-    pyenv -p /path/to/env dev -s script.py
+    pytato -p /path/to/env dev -r
+    pytato -p /path/to/env dev -s script.py
 
     To move to a environments directory:
-    cd $(pyenv dev) -> cd ~/env/dev
-    cd $(pyenv -p ~/path/ env) -> cd ~/path/env
+    cd $(pytato dev) -> cd ~/env/dev
+    cd $(pytato -p ~/path/ env) -> cd ~/path/env
 ```
