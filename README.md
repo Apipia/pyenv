@@ -48,7 +48,15 @@ Example:
     └── Pipfile.lock
 ```
 `pytato -p ~/git/repos other_project -r`  
-Above command will spawn a ptpython repl in the virtual environment defined in other_project/Pipefile.
+Above command will spawn a ptpython REPL in the virtual environment defined in other_project/Pipefile.
+
+### Adding Existing Environment
+If using the `-p` argument is too annoying, you can simply add an existing virtual environment to pytato. This is accomplished on the back end with a softlink. The requirement is that the `-a` argument must be a directory that contains a `.venv` directory. Using the above example again, one could run the following command:  
+```
+pytato other_project -a ~/git/repos/project
+```
+This will create a softlink `~/env/other_project -> ~/git/repos/project` and pytato's expected functionality will now support this new environment.  
+`pytato other_project -r` will open up a pytpython REPL in the environment defined in `~/git/repos/project/.venv`
 
 ## Usage
 ```
@@ -64,7 +72,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -r, --repl            Use to activate a ptpython REPL in selected
+  -r, --Use to activate a ptpython REPL in selected
                         environment. Cannot use this with -s option.
   -s SCRIPT, --script SCRIPT
                         Supply a script to run in the virtual environment
