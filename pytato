@@ -22,15 +22,39 @@ def read_args():
     cd $(pytato dev) -> cd ~/env/dev
     cd $(pytato -p ~/path/ env) -> cd ~/path/env
     """
-    parser = argparse.ArgumentParser(description="", epilog=example_text, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description="",
+        epilog=example_text,
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("-r", "--repl", action="store_true", help="Use to activate a ptpython REPL in selected environment. Cannot use this with -s option.")
-    group.add_argument("-s", "--script", dest="script", help="Supply a script to run in the virtual environment chosen. Cannot use this with -r option.")
-    parser.add_argument("env", help="Environment to activate. By default this is a directory name after ~/env/ that contains a .venv directory. "
-                        "Should be a directory name following your path argument if default path is not present. "
-                        "Example: if env=dev then ~/env/dev/.venv should exist.", default='dev')
-    parser.add_argument("-p", "--path", dest="path", help="The path to where your virtual environments are located. ~/env/ by default",
-                        default="~/env/")
+    group.add_argument("-r", "--repl", action="store_true",
+        help="Use to activate a ptpython REPL in selected environment. Cannot use this with -s option."
+    )
+    group.add_argument("-s", "--script", dest="script",
+        help="Supply a script to run in the virtual environment chosen. Cannot use this with -r option."
+    )
+    group.add_argument("-a", "--add-environment", dest="add_environment",
+        help="Supply the path to a directory that contains a .venv file"
+    )
+
+    group.add_argument("-u", "--update", action="store_true",
+        help="Use this to run pipenv update in the supplied environment."
+    )
+
+    group.add_argument("-e", "--edit", action="store_true",
+        help="Use this to open up the Pipefile in VIM and make edits"
+    )
+
+    parser.add_argument("env",
+        help="Environment to activate. By default this is a directory name after ~/env/ that contains a .venv directory. "
+        "Should be a directory name following your path argument if default path is not present. "
+        "Example: if env=dev then ~/env/dev/.venv should exist.", default='dev'
+    )
+    parser.add_argument("-p", "--path", dest="path",
+        help="The path to where your virtual environments are located. ~/env/ by default",
+        default="~/env/"
+    )
     return parser.parse_args()
 
 
@@ -42,8 +66,34 @@ def run_script(path, script):
     python_bin = "{}/.venv/bin/python3".format(path)
 
     # path to the script that must run under the virtualenv
-    subprocess.Popen([python_bin, script])
+    process = subprocess.Popen([python_bin, script])
+    process.communicate()
 
+def add_environment(virtual_envs, path):
+    # Verify existence of .venv
+    environment_location = os.path.abspath(os.path.expanduser(path))
+    env_file = environment_location+"/.venv"
+    if not os.path.exists(env_file):
+        print("Environment {} does not exist!".format(env_file))
+    else:
+        print("New environment located at: {}".format(env_file))
+        # Create a softlink in ~/env/ -> env_file
+        print("ln -s {} {}".format(environment_location, virtual_envs))
+        os.system("ln -s {} {}".format(environment_location, virtual_envs))
+
+def update_environment(path):
+    if not os.path.exists(path):
+        print("Environment not found!")
+    else:
+        os.system("cd {};pipenv update".format(path))
+    pass
+
+def edit_environment(path):
+    if not os.path.exists(path):
+        print("Environment not found!")
+    else:
+        os.system("vim {}/Pipfile".format(path))
+    pass
 
 def spawn_ptpython(path):
     """
@@ -56,7 +106,6 @@ def spawn_ptpython(path):
         exit(1)
     exec(compile(open(activate_this_file, "rb").read(), activate_this_file, 'exec'), dict(__file__=activate_this_file))
 
-    # TODO: Check if import fails, possibly prompt user if they'd like to install ptpython.
     from ptpython.repl import embed
 
     config_file = '~/.ptpython/config.py'
@@ -77,7 +126,7 @@ def main():
     path_to_env_dir = os.path.abspath(os.path.expanduser(args.path))
     env_path = "{}/{}".format(path_to_env_dir, args.env)
 
-    if not os.path.exists(env_path):
+    if not args.add_environment and not os.path.exists(env_path):
         print("Path to {} environment does not exist!".format(args.env))
         exit(1)
 
@@ -93,6 +142,12 @@ def main():
         else:
             run_script(env_path, script)
             exit(0)
+    elif args.add_environment is not None:
+        add_environment(env_path, args.add_environment)
+    elif args.update:
+        update_environment(env_path)
+    elif args.edit:
+        edit_environment(env_path)
     else:
         print("{}".format(env_path))
 
