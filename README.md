@@ -52,7 +52,8 @@ Above command will spawn a ptpython repl in the virtual environment defined in o
 
 ## Usage
 ```
-usage: pytato [-h] [-r | -s SCRIPT] [-p PATH] env
+usage: pytato [-h] [-r | -s SCRIPT | -a ADD_ENVIRONMENT | -u | -e] [-p PATH]
+              env
 
 positional arguments:
   env                   Environment to activate. By default this is a
@@ -68,6 +69,12 @@ optional arguments:
   -s SCRIPT, --script SCRIPT
                         Supply a script to run in the virtual environment
                         chosen. Cannot use this with -r option.
+  -a ADD_ENVIRONMENT, --add-environment ADD_ENVIRONMENT
+                        Supply the path to a directory that contains a .venv
+                        file
+  -u, --update          Use this to run pipenv update in the supplied
+                        environment.
+  -e, --edit            Use this to open up the Pipefile in VIM and make edits
   -p PATH, --path PATH  The path to where your virtual environments are
                         located. ~/env/ by default
 
@@ -82,4 +89,17 @@ optional arguments:
     To move to a environments directory:
     cd $(pytato dev) -> cd ~/env/dev
     cd $(pytato -p ~/path/ env) -> cd ~/path/env
+
+    Adding an existing environment to pytato:
+    pytato new_env -a /path/to/existing/env
+    This will create a softlink in the default path location to
+    this new environment.
+
+    Editing a Pipfile in a pytato environment:
+    pytato dev -e
+    This will open up the Pipfile in VIM for editing.
+
+    Updating an environment in pytato:
+    pytato dev -u
+    In this example, this will run 'pipenv update' within the directory of the dev environment.
 ```
