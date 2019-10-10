@@ -7,7 +7,7 @@ pipenv: `pip install --user pipenv`
 (May need to update path to use `pipenv` command without full path) . 
 
 ## Installation
-Simply download the pyenv file, make it executable, and place it in your path.
+Simply download the `pytato.py` file, make it executable, and place it in your path.
 
 ## Description  
 pyenv is a tool that allows you to organize your python virtual environments and easily switch between them. The two main functionalities include spawning a ptpython REPL and running a python script in a specific environment. 
