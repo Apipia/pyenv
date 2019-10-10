@@ -21,6 +21,19 @@ def read_args():
     To move to a environments directory:
     cd $(pytato dev) -> cd ~/env/dev
     cd $(pytato -p ~/path/ env) -> cd ~/path/env
+
+    Adding an existing environment to pytato:
+    pytato new_env -a /path/to/existing/env
+    This will create a softlink in the default path location to
+    this new environment.
+
+    Editing a Pipfile in a pytato environment:
+    pytato dev -e
+    This will open up the Pipfile in VIM for editing.
+
+    Updating an environment in pytato:
+    pytato dev -u
+    In this example, this will run 'pipenv update' within the directory of the dev environment.
     """
     parser = argparse.ArgumentParser(description="",
         epilog=example_text,
@@ -153,3 +166,4 @@ def main():
 
 if __name__=='__main__':
     main()
+    
